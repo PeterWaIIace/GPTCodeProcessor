@@ -1,12 +1,28 @@
-from revChatGPT.revChatGPT import Chatbot
+from revChatGPT.ChatGPT import Chatbot
 import subprocess
 import os
 import json
+
+class ChatTuned():
+
+    def __init__(self,init_message):
+        self.init_message = init_message
+
+        with open("config.json") as f:
+            config = json.load(f)
+
+        self.chatbot  = Chatbot(config, conversation_id=None)
+        self.response = self.chatbot.ask(self.init_message)
+
+    def ask(self, message):
+        return self.chatbot.ask(message)
+
 
 class CodeGenerator():
 
     def __init__(self,language,program_input_description,program_output_description,
                 program_description=""):
+
         self.init_message = "I want you to treat me as API which can take only JSON files containing fields CODE, FILENAME. "+\
                             "You will write requested code into CODE field, filename into FILENAME."+\
                             "I will send you code result in "+\
@@ -21,21 +37,18 @@ class CodeGenerator():
                             f"\nProgram Input: {program_input_description}"+\
                             f"\nProgram Output: {program_output_description}"+\
                             f"\nRemember I am API. You are only allowed to respond with {language} syntax inside Json. Json should be in one line. Do not add any english comment or explanation inside JSON. Do not add any english comment or explanation outside JSON."
+
+        self.chatbot = ChatTuned(self.init_message)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
-        config = {
-            "email":"*",
-            "password": "*"
-        }
         self.message  = ""
         self.filename = "dummy.txt"
-        self.chatbot  = Chatbot(config, conversation_id=None)
         pass
 
 
 
     def request_code(self,message):
         print("Message: \n",message)
-        self.response = self.chatbot.get_chat_response(message, output="text")
+        self.response = self.chatbot.ask(message, output="text")
 
         print("Response: \n",self.response)
 
@@ -51,16 +64,13 @@ class CodeGenerator():
             except Exception as e:
                 print("Exception: \n",e)
 
-                self.response = self.chatbot.get_chat_response("{\"Result\":\""+ str(e) +"\"}", output="text")
+                self.response = self.chatbot.ask("{\"Result\":\""+ str(e) +"\"}", output="text")
                 print("Response: \n",self.response)
 
         if "FILENAME" in self.message.keys():
             self.filename = self.message["FILENAME"]
+
         correct_format = True
-        # except:
-        #     self.response = self.chatbot.get_chat_response("WRONG RESPONSE, RESET AND LISTEN TO INSTRUCTIONS IN NEXT MESSAGE!", output="text")
-        #     print("Exception: \n",self.response)
-        #     pass
 
     def update_file(self):
         if self.message["CODE"] != "":
