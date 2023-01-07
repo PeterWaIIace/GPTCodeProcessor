@@ -24,7 +24,8 @@ class ChatTuned():
             try:
                 response = self.chatbot.ask(message, conversation_id=self.conversation_id)
                 success = True
-            except:
+            except Exception as e:
+                print(f"Exception: {e}")
                 pass
 
         return response
@@ -59,7 +60,7 @@ class CodeGenerator():
 
     def request_code(self,message):
         print("Message: \n",message)
-        self.response = self.chatbot.ask(message, output="text")
+        self.response = self.chatbot.ask(message)
 
         print("Response: \n",self.response)
 
@@ -75,7 +76,7 @@ class CodeGenerator():
             except Exception as e:
                 print("Exception: \n",e)
 
-                self.response = self.chatbot.ask("{\"Result\":\""+ str(e) +"\"}", output="text")
+                self.response = self.chatbot.ask("{\"Result\":\""+ str(e) +"\"}")
                 print("Response: \n",self.response)
 
         if "FILENAME" in self.message.keys():
