@@ -11,11 +11,23 @@ class ChatTuned():
         with open("config.json") as f:
             config = json.load(f)
 
-        self.chatbot  = Chatbot(config, conversation_id=None)
-        self.response = self.chatbot.ask(self.init_message)
+        self.chatbot  = Chatbot(config, conversation_id=None, parent_id=None)
+        self.conversation_id = self.chatbot.conversation_id
+
+        self.response = self.ask(self.init_message)
 
     def ask(self, message):
-        return self.chatbot.ask(message)
+        success = False
+        response = ""
+
+        while not success:
+            try:
+                response = self.chatbot.ask(message, conversation_id=self.conversation_id)
+                success = True
+            except:
+                pass
+
+        return response
 
 
 class CodeGenerator():
@@ -43,7 +55,6 @@ class CodeGenerator():
         self.message  = ""
         self.filename = "dummy.txt"
         pass
-
 
 
     def request_code(self,message):
