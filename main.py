@@ -1,7 +1,8 @@
 from revChatGPT.ChatGPT import Chatbot
 import subprocess
-import os
 import json
+import time
+import os
 
 class ChatTuned():
 
@@ -26,9 +27,10 @@ class ChatTuned():
                 success = True
             except Exception as e:
                 print(f"Exception: {e}")
+                time.sleep(10)
                 pass
 
-        return response
+        return response["message"]
 
 
 class CodeGenerator():
@@ -36,53 +38,46 @@ class CodeGenerator():
     def __init__(self,language,program_input_description,program_output_description,
                 program_description=""):
 
-        self.init_message = "I want you to treat me as API which can take only JSON files containing fields CODE, FILENAME. "+\
-                            "You will write requested code into CODE field, filename into FILENAME."+\
-                            "I will send you code result in "+\
-                            "following format {'Result':'Hello World'}. You will investigate code and if required you will send update, "+\
-                            "code will ran successfully you will respond with empty field CODE."+\
-                            "example:"+\
-                            "\nWrite Python program outputting bye world:"+\
-                            "\nAI:{\"CODE\":\"print(\"bye world\")\",\"FILENAME\":\"byeworld.py\"}"+\
-                            "\nUSER:{\"Result\":\"bye world\"}"+\
-                            f"\n\nI want you to write following in {language}. "+\
+        self.init_message = f"I want you to write program in {language}. "+\
                             f"\nProgram: {program_description}"+\
                             f"\nProgram Input: {program_input_description}"+\
                             f"\nProgram Output: {program_output_description}"+\
-                            f"\nRemember I am API. You are only allowed to respond with {language} syntax inside Json. Json should be in one line. Do not add any english comment or explanation inside JSON. Do not add any english comment or explanation outside JSON."
+                            f"\nRespond with JSON having two fields \"CODE\" with {language} code and \"MESSAGE\" with explanation or comment. No text beyond JSON."
 
         self.chatbot = ChatTuned(self.init_message)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.message  = ""
-        self.filename = "dummy.txt"
+        self.filename = "dummy.py"
         pass
 
 
-    def request_code(self,message):
-        print("Message: \n",message)
-        self.response = self.chatbot.ask(message)
+    def send_exception(self,e):
+        return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
 
-        print("Response: \n",self.response)
+    def send_program_output(self,e):
+        return self.chatbot.ask("{\"Output\":\""+ str(e) +"\"}")
+
+    def request_code(self,message):
+        message = ""
+        self.response = self.chatbot.ask(message)
 
         correct_format = False
         while not correct_format:
             try:
-                first_pos   = self.response["message"].find('{')
-                second_pos  = len(self.response["message"]) - self.response["message"][-1:].find('}')
-                tmp_message = self.response["message"][first_pos:second_pos]
+                first_pos   = self.response.find('{')
+                second_pos  = len(self.response) - self.response[-1:].find('}')
+                tmp_message = self.response[first_pos:second_pos]
 
-                self.message  = json.loads(tmp_message)
+                message  = json.loads(tmp_message)
                 correct_format = True
+
             except Exception as e:
-                print("Exception: \n",e)
+                self.response = self.send_exception(e)
 
-                self.response = self.chatbot.ask("{\"Result\":\""+ str(e) +"\"}")
-                print("Response: \n",self.response)
+        # if "FILENAME" in self.message.keys():
+        #     self.filename = self.message["FILENAME"]
 
-        if "FILENAME" in self.message.keys():
-            self.filename = self.message["FILENAME"]
-
-        correct_format = True
+        return message
 
     def update_file(self):
         if self.message["CODE"] != "":
@@ -93,9 +88,9 @@ class CodeGenerator():
         self.request_code(self.init_message)
         self.update_file()
         while(self.message["CODE"] != ""):
-            self.run_proxy()
+            self.run_file()
 
-    def run_proxy(self):
+    def run_file(self):
         os.environ['PYTHONUNBUFFERED'] = '1'
         process = subprocess.Popen(f"python3 {self.filename}", shell=False, stdout=subprocess.PIPE, env=os.environ) # Shell doesn't quite matter for this issue
         while True:
@@ -103,11 +98,11 @@ class CodeGenerator():
             if process.poll() is not None:
                 break
             if output:
-                self.request_code("{\"Result\":\""+output.decode("utf-8")+"\"}")
+                self.request_code("{\"Result\":\""+output.decode("utf-8")+"\"}.")
                 self.update_file()
         rc = process.poll()
         return rc
 
 # returns {'message':message, 'conversation_id':self.conversation_id, 'parent_id':self.parent_id}
-generator = CodeGenerator("Python","No input","Hello World","Program generates random tree and performs dfs algorithm")
+generator = CodeGenerator("Python","No input","Hello World","Program generates and prints output")
 generator.run()
