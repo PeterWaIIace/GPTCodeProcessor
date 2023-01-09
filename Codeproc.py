@@ -35,6 +35,16 @@ class ChatTuned():
 
 class CodeGenerator():
 
+    def __init__(self,prompt_file):
+        self.init_message = ""
+        with open("initprompt.json","r") as fjs:
+            self.init_message = json.load(fjs)["prompt"]
+
+        print(self.init_message)
+        self.chatbot = ChatTuned(self.init_message)
+        # https://github.com/acheong08/ChatGPT/wiki/Setup
+        self.filename = "dummy.py"
+
     def __init__(self,language,program_input_description,program_output_description,
                 program_description=""):
 

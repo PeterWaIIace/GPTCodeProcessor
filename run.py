@@ -1,5 +1,6 @@
 from bottle import route, run
 import bottle
+import json
 import os
 
 @bottle.route('/')
@@ -20,7 +21,8 @@ def readFiles(filename="dummy.py"):
 @bottle.post('/buttons/start')
 def buttonStart():
     print(bottle.request.json)
-
+    with open("initprompt.json",'w') as fjs:
+        json.dump(bottle.request.json,fjs)
 
 
 run(host='localhost', port=8080, debug=True)

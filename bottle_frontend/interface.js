@@ -1,5 +1,4 @@
 const {useState} = React;
-console.log(React)
 
 const init_prompt = "I want you to write program in Python. You are allowed to respond only in JSON. No explanation. No English text.\n"+
 "Program: Program generates and prints output\n"+
@@ -43,8 +42,7 @@ function PromptInput()
                     'Content-Type': 'application/json'
                   },
                 body: JSON.stringify({
-                    "prompt":prompt,
-                    "test":"test"
+                    "prompt":prompt
                 })
             }
         ).catch(error   => console.error('Error:', error));
