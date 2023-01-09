@@ -37,28 +37,29 @@ class CodeGenerator():
 
     def __init__(self,prompt_file):
         self.init_message = ""
-        with open("initprompt.json","r") as fjs:
+        with open(prompt_file,"r") as fjs:
             self.init_message = json.load(fjs)["prompt"]
 
         print(self.init_message)
+
         self.chatbot = ChatTuned(self.init_message)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.filename = "dummy.py"
 
-    def __init__(self,language,program_input_description,program_output_description,
-                program_description=""):
+    # def __init__(self,language="",program_input_description="",program_output_description="",
+    #             program_description=""):
 
-        self.init_message = f"I want you to write program in {language}. You are allowed to respond only in JSON. No explanation. No English text."+\
-                            f"\nProgram: {program_description}"+\
-                            f"\nProgram Input: {program_input_description}"+\
-                            f"\nProgram Output: {program_output_description}"+\
-                            f"\nRespond with JSON having one field \"CODE\" with {language} code."
+    #     self.init_message = f"I want you to write program in {language}. You are allowed to respond only in JSON. No explanation. No English text."+\
+    #                         f"\nProgram: {program_description}"+\
+    #                         f"\nProgram Input: {program_input_description}"+\
+    #                         f"\nProgram Output: {program_output_description}"+\
+    #                         f"\nRespond with JSON having one field \"CODE\" with {language} code."
 
-        print(self.init_message)
-        self.chatbot = ChatTuned(self.init_message)
-        # https://github.com/acheong08/ChatGPT/wiki/Setup
-        self.filename = "dummy.py"
-        pass
+    #     print(self.init_message)
+    #     self.chatbot = ChatTuned(self.init_message)
+    #     # https://github.com/acheong08/ChatGPT/wiki/Setup
+    #     self.filename = "dummy.py"
+    #     pass
 
 
     def send_exception(self,e):
@@ -94,6 +95,21 @@ class CodeGenerator():
             with open(self.filename,"w") as f:
                 f.write(code["CODE"])
 
+    def step(self,previous_result=None):
+        code   = ""
+        output = ""
+        if previous_result:
+            response_json = self.request_code(self.init_message)
+        else:
+            response_json = self.request_code(self.init_message)
+
+        if "CODE" in response_json:
+            code = response_json["CODE"]
+            output = self.update_file(code)
+
+        return output
+
+
     def run(self):
         code = self.request_code(self.init_message)
         self.update_file(code)
@@ -119,6 +135,7 @@ class CodeGenerator():
         rc = process.poll()
         return output
 
+# if __name__=="__main__":
 # returns {'message':message, 'conversation_id':self.conversation_id, 'parent_id':self.parent_id}
-generator = CodeGenerator("Python","No input","Hello World","Program generates and prints output")
-generator.run()
+    # generator = CodeGenerator("Python","No input","Hello World","Program generates and prints output")
+    # generator.run()

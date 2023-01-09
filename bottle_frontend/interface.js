@@ -12,10 +12,12 @@ function CodeView()
 {
     const [displayedText, setDisplayedText] = useState("");
     // TO DO: make fetch request to local server
-    fetch(`${window.location.origin}/read/dummy.py`)
-    .then(response => response.text())
-    .then(text     => setDisplayedText(text))
-    .catch(error   => console.error('Error:', error));
+    setInterval(function() {
+        fetch(`${window.location.origin}/read/dummy.py`)
+        .then(response => response.text())
+        .then(text     => setDisplayedText(text))
+        .catch(error   => console.error('Error:', error));
+    }, 5000);
 
     return (
         <div>
@@ -34,7 +36,7 @@ function PromptInput()
         prompt = event.target.value;
     };
 
-    const onPressSend = event => {
+    const onPressGenerate = event => {
         fetch(`${window.location.origin}/buttons/start`,
             {
                 method: 'POST',
@@ -48,12 +50,21 @@ function PromptInput()
         ).catch(error   => console.error('Error:', error));
     }
 
+    const onPressStop = event => {
+        fetch(`${window.location.origin}/buttons/stop`,
+            {
+                method: 'POST'
+            }
+        ).catch(error   => console.error('Error:', error));
+    }
+
     return (
         <div>
             <textarea  style={{width: "100%",height: "150px"}}
                 type="text" id="fname" name="fname" value={message} onChange={handleMessageChange}>
             </textarea>
-            <button onClick={onPressSend} className="btn btn-primary" title="Send Prompt" color="#841584">Generate</button>
+            <button onClick={onPressGenerate} className="btn btn-primary" title="Send Prompt" color="#841584">Generate</button>
+            <button onClick={onPressStop} className="btn btn-primary" title="Send Prompt" color="#841584">Stop</button>
         </div>
     );
 };
