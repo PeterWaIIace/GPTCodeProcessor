@@ -7,6 +7,7 @@ import os
 class ChatTuned():
 
     def __init__(self,init_message):
+        self.stop_override = False
         self.init_message = init_message
 
         with open("config.json") as f:
@@ -17,11 +18,14 @@ class ChatTuned():
 
         self.response = self.ask(self.init_message)
 
+    def stop(self):
+        self.stop_override = True
+
     def ask(self, message):
         success = False
         response = ""
 
-        while not success:
+        while not success and not self.stop_override:
             try:
                 response = self.chatbot.ask(message, conversation_id=self.conversation_id)
                 success = True
@@ -30,6 +34,7 @@ class ChatTuned():
                 time.sleep(10)
                 pass
 
+        self.stop_override = False
         return response["message"]
 
 
@@ -45,6 +50,9 @@ class CodeGenerator():
         self.chatbot = ChatTuned(self.init_message)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.filename = "resources/dummy.py"
+
+    def stop(self):
+        self.chatbot.stop()
 
     def send_exception(self,e):
         return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
@@ -83,6 +91,7 @@ class CodeGenerator():
     def step(self,previous_result=None):
         code   = ""
         output = ""
+
         if previous_result:
             response_json = self.request_code(self.init_message)
         else:

@@ -6,14 +6,15 @@ import json
 import os
 
 prompt_file = "initprompt.json"
+generator = None
 generate = False
 generator_thread = None
 latest_response = ""
 
 def codeGenThread():
-    global generate,latest_response
-    generator = CodeGenerator(prompt_file)
+    global generate,latest_response,generator
     response = None
+    generator = CodeGenerator(prompt_file)
 
     while generate:
         response = generator.step(response)
@@ -59,6 +60,9 @@ def buttonStart():
     global generate, generator_thread
     print("STOPPING")
     generate = False
+
+    if generator != None:
+        generator.stop()
     generator_thread.join()
 
 run(host='localhost', port=8080, debug=True)
