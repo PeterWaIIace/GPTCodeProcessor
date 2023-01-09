@@ -11,4 +11,11 @@ Using chatGPT (based on reversed Engineered API) to generate runable python code
 
 Make ChatGPT generate code!
 
+# How to run
+
+1. Checkout out repo
+2. Install dependencies
+3. execute `python3 run.py`
+4. open `http://localhost:8000`
+
 # [WIP]
