@@ -8,14 +8,18 @@ import os
 prompt_file = "initprompt.json"
 generate = False
 generator_thread = None
+latest_response = ""
 
 def codeGenThread():
-    global generate
+    global generate,latest_response
     generator = CodeGenerator(prompt_file)
     response = None
 
     while generate:
-        generator.step(response)
+        response = generator.step(response)
+        latest_response = response
+
+    print("Generator Stopped")
 
 @bottle.route('/')
 def index():
@@ -26,6 +30,11 @@ def index():
 def interfaces(filename="interface.js"):
     root = os.path.join(os.path.dirname(__file__), 'bottle_frontend')
     return bottle.static_file(filename, root=root)
+
+@bottle.route('/GPTresponse')
+def getLatestResponse():
+    global latest_response
+    return latest_response
 
 @bottle.route('/read/<filename>')
 def readFiles(filename="dummy.py"):
@@ -42,12 +51,13 @@ def buttonStart():
 
     generate = True
     generator_thread = threading.Thread(target=codeGenThread)
-    generator_thread.run()
+    generator_thread.start()
 
 
 @bottle.post('/buttons/stop')
 def buttonStart():
     global generate, generator_thread
+    print("STOPPING")
     generate = False
     generator_thread.join()
 

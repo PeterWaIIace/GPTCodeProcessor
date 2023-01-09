@@ -44,23 +44,7 @@ class CodeGenerator():
 
         self.chatbot = ChatTuned(self.init_message)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
-        self.filename = "dummy.py"
-
-    # def __init__(self,language="",program_input_description="",program_output_description="",
-    #             program_description=""):
-
-    #     self.init_message = f"I want you to write program in {language}. You are allowed to respond only in JSON. No explanation. No English text."+\
-    #                         f"\nProgram: {program_description}"+\
-    #                         f"\nProgram Input: {program_input_description}"+\
-    #                         f"\nProgram Output: {program_output_description}"+\
-    #                         f"\nRespond with JSON having one field \"CODE\" with {language} code."
-
-    #     print(self.init_message)
-    #     self.chatbot = ChatTuned(self.init_message)
-    #     # https://github.com/acheong08/ChatGPT/wiki/Setup
-    #     self.filename = "dummy.py"
-    #     pass
-
+        self.filename = "resources/dummy.py"
 
     def send_exception(self,e):
         return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
@@ -73,6 +57,7 @@ class CodeGenerator():
         self.response = self.chatbot.ask(message)
 
         correct_format = False
+
         while not correct_format:
             try:
                 print(self.response)
@@ -91,9 +76,9 @@ class CodeGenerator():
         return code
 
     def update_file(self,code):
-        if "CODE" in code:
-            with open(self.filename,"w") as f:
-                f.write(code["CODE"])
+        print("updating file:",code)
+        with open(self.filename,"w") as f:
+            f.write(code)
 
     def step(self,previous_result=None):
         code   = ""
@@ -104,6 +89,7 @@ class CodeGenerator():
             response_json = self.request_code(self.init_message)
 
         if "CODE" in response_json:
+            print("response_json: ",response_json)
             code = response_json["CODE"]
             output = self.update_file(code)
 
@@ -111,17 +97,10 @@ class CodeGenerator():
 
 
     def run(self):
-        code = self.request_code(self.init_message)
-        self.update_file(code)
+        response = None
 
-        while("CODE" in code):
-
-            output = self.run_file()
-
-            if output:
-                code = self.request_code("{\"Result\":\""+output.decode("utf-8")+"\"}")
-                self.update_file(code)
-
+        while True:
+            self.step(response)
 
     def run_file(self):
         os.environ['PYTHONUNBUFFERED'] = '1'

@@ -11,17 +11,18 @@ let prompt = init_prompt;
 function CodeView()
 {
     const [displayedText, setDisplayedText] = useState("");
-    // TO DO: make fetch request to local server
+    // // TO DO: make fetch request to local server
     setInterval(function() {
         fetch(`${window.location.origin}/read/dummy.py`)
         .then(response => response.text())
         .then(text     => setDisplayedText(text))
         .catch(error   => console.error('Error:', error));
-    }, 5000);
+    }, 1000);
 
     return (
         <div>
-          <p style={{whiteSpace: 'pre'}}>{displayedText}</p>
+            <h2>Generated Code:</h2>
+            <p style={{whiteSpace: 'pre'}}>{displayedText}</p>
         </div>
     );
 };
@@ -63,17 +64,26 @@ function PromptInput()
             <textarea  style={{width: "100%",height: "150px"}}
                 type="text" id="fname" name="fname" value={message} onChange={handleMessageChange}>
             </textarea>
-            <button onClick={onPressGenerate} className="btn btn-primary" title="Send Prompt" color="#841584">Generate</button>
-            <button onClick={onPressStop} className="btn btn-primary" title="Send Prompt" color="#841584">Stop</button>
+            <button onClick={onPressGenerate} className="btn btn-primary m-1" title="Send Prompt">Generate</button>
+            <button onClick={onPressStop} className="btn btn-primary m-1" title="Send Prompt">Stop</button>
         </div>
     );
 };
 
 function PromptResponse()
 {
+    const [displayedResponse, setDisplayedResponse] = useState("");
+    // // TO DO: make fetch request to local server
+    setInterval(function() {
+        fetch(`${window.location.origin}/GPTresponse`)
+        .then(response => response.text())
+        .then(text     => setDisplayedResponse(text))
+        .catch(error   => console.error('Error:', error));
+    }, 1000);
+
     return (
         <div>
-          <p>Hello</p>
+          <p style={{whiteSpace: 'pre'}}>{displayedResponse}</p>
         </div>
     );
 };
