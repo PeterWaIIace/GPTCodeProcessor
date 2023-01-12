@@ -67,7 +67,39 @@ class ChatTuned():
     def ask(self, message):
         return self.ask_options[self.API](message)
 
+# Prompt builder
+class PromptBuilder:
 
+    def __init__(self,language,inputParameters,outputParameters,programDescription = ""):
+        self.languagePlaceholder = "Python"
+
+        self.programDescription = programDescription
+        self.inputParameters  = inputParameters
+        self.outputParameters = outputParameters
+
+        self.program_description = "Program: {programDescription}\n"+\
+            f"Program Input:  {inputParameters}\n"+\
+            f"Program Output: {outputParameters}\n"
+
+        self.init_prompt = "I want you to write program in Python. You are allowed to respond only in JSON. No explanation. No English text.\n"+\
+            self.program_description+\
+            "Respond with JSON having field \"CODE\" with Python code and \"Inputs\" with list of possible inputs and \"Outputs\" with respective expected outputs."
+
+        self.init_prompt.replace(self.languagePlaceholder,language)
+
+    def get_initial_prompt(self):
+        return self.init_prompt
+
+    def get_debug_prompt(self,output):
+
+        # with open(filename, "r") as f:
+        #     file_content = f.read()
+
+        debug_prompt = f"Code generated following output: ```{output}```\n"+\
+                             "If output is result of bug, or unexpected exception, provide fixed code in new JSON.\n"+\
+                            f"If output matches expected pattern: `{self.outputParameters}` then provide answer `CODE IS CORRECT`"
+
+        return debug_prompt
 class CodeGenerator():
 
     def __init__(self,prompt_file):
@@ -75,12 +107,13 @@ class CodeGenerator():
         self.API = "revChatGPT"
         with open(prompt_file,"r") as fjs:
             prompt_config     = json.load(fjs)
-            self.init_message = prompt_config["prompt"]
+            self.input        = prompt_config["input"]
+            self.output       = prompt_config["output"]
             self.API          = prompt_config["API"]
 
-        print(self.init_message)
+        self.builder = PromptBuilder("Python",self.input,self.output)
 
-        self.chatbot = ChatTuned(self.init_message,API=self.API)
+        self.chatbot = ChatTuned(self.builder.get_initial_prompt(),API=self.API)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.filename = "resources/dummy.py"
 
@@ -89,9 +122,6 @@ class CodeGenerator():
 
     def send_exception(self,e):
         return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
-
-    def send_program_output(self,e):
-        return self.chatbot.ask("{\"Output\":\""+ str(e) +"\"}")
 
     def request_code(self,message):
         code = ""
@@ -121,28 +151,29 @@ class CodeGenerator():
         with open(self.filename,"w") as f:
             f.write(code)
 
-    def step(self,previous_result=None):
+    def step(self,previous_result : str = None):
         code   = ""
         output = ""
 
         if previous_result:
-            response_json = self.request_code(self.init_message)
+            new_prompt    = self.builder.get_debug_prompt(previous_result)
+            response_json = self.request_code(new_prompt)
         else:
             response_json = self.request_code(self.init_message)
 
         if "CODE" in response_json:
-            print("response_json: ",response_json)
             code = response_json["CODE"]
-            output = self.update_file(code)
+            self.update_file(code)
+
+        output = self.run_file()
 
         return output
-
 
     def run(self):
         response = None
 
         while True:
-            self.step(response)
+            response = self.step(response)
 
     def run_file(self):
         os.environ['PYTHONUNBUFFERED'] = '1'

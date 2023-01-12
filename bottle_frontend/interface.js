@@ -2,25 +2,12 @@ const {useState} = React;
 
 let language_placeholder = "Python"
 
-let prompt_components = {
-    "prompt_start"            :"I want you to write program in Python. You are allowed to respond only in JSON. No explanation. No English text.\n"+
-    "Program: Program generates and prints output\n",
-    "init_prompt_input_reqs"  :"Program Input: ",
-    "input_reqs"              : "No input\n",
-    "init_prompt_output_reqs" : "Program Output: ",
-    "output_reqs"             : "Hello World\n",
-    "init_prompt_closing"     : "Respond with JSON having one field \"CODE\" with Python code."
+let prompt_parameters = {
+    "programDescription"      : "Program do not take input and print output",
+    "inputReqs"               : "No input\n",
+    "outputReqs"              : "Hello world"
 };
 
-function build_prompt()
-{
-    let prompt = "";
-    for (const key in prompt_components)
-    {
-        prompt += prompt_components[key];
-    };
-    return prompt;
-}
 
 function CodeView()
 {
@@ -43,26 +30,28 @@ function CodeView()
 
 function PromptInput()
 {
-    const [inputReqs, setInputReqs]   = useState(prompt_components["input_reqs"]);
-    const [outputReqs, setOutputReqs] = useState(prompt_components["output_reqs"]);
+    const [inputProgramDescription, setProgramDescription]   = useState(prompt_parameters["programDescription"]);
+    const [inputReqs, setInputReqs]   = useState(prompt_parameters["inputReqs"]);
+    const [outputReqs, setOutputReqs] = useState(prompt_parameters["outputReqs"]);
+
+    const handleProgramDescriptionChange = event => {
+        setProgramDescription(event.target.value);
+        prompt_parameters["programDescription"] = event.target.value;
+    }
 
     const handleOutputReqsChange = event => {
         // 👇️ access textarea value
         setOutputReqs(event.target.value);
-        prompt_components["output_reqs"] = document.getElementById("output_reqs").textContent;
+        prompt_parameters["outputReqs"] = event.target.value;
     };
 
     const handleInputReqsChange = event => {
         // 👇️ access textarea value
         setInputReqs(event.target.value);
-        prompt_components["input_reqs"] = document.getElementById("input_reqs").textContent;
+        prompt_parameters["inputReqs"] = event.target.value;
     };
 
     const onPressGenerate = event => {
-
-        let prompt = build_prompt();
-        prompt.replace(language_placeholder, document.getElementById("dLang").textContent);
-
         fetch(`${window.location.origin}/buttons/start`,
             {
                 method: 'POST',
@@ -70,7 +59,8 @@ function PromptInput()
                     'Content-Type': 'application/json'
                   },
                 body: JSON.stringify({
-                    "prompt":prompt,
+                    "input":prompt_parameters["inputReqs"],
+                    "output":prompt_parameters["outputReqs"],
                     "API": document.getElementById("dAPI").textContent
                 })
             }
@@ -105,13 +95,17 @@ function PromptInput()
             </div>
 
             <div className="row">
-                Input Code
+                Program Description
                 <textarea  style={{width: "100%",height: "100px"}}
-                    type="text" id="input_reqs" name="fname" value={inputReqs} onChange={handleInputReqsChange}>
+                    type="text" id="inputReqs" name="fname" value={inputProgramDescription} onChange={handleProgramDescriptionChange}>
                 </textarea>
-                Output of Code
+                Input description
                 <textarea  style={{width: "100%",height: "100px"}}
-                    type="text" id="output_reqs" name="fname" value={outputReqs} onChange={handleOutputReqsChange}>
+                    type="text" id="inputReqs" name="fname" value={inputReqs} onChange={handleInputReqsChange}>
+                </textarea>
+                Output description
+                <textarea  style={{width: "100%",height: "100px"}}
+                    type="text" id="outputReqs" name="fname" value={outputReqs} onChange={handleOutputReqsChange}>
                 </textarea>
             </div>
 
