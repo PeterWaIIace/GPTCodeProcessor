@@ -21,9 +21,10 @@ class ChatTuned():
         self.init_options[self.API](config[self.API])
 
     def __init__OpenAIAPI(self,config):
+        # print(config["organization"])
         openai.organization = config["organization"]
         openai.api_key = config["apiKey"]
-        print(openai.Model.list())
+        # print(openai.Model.list())
 
     def __init__revChatGPT(self, config):
         self.chatbot  = Chatbot(config, conversation_id=None, parent_id=None)
@@ -52,7 +53,16 @@ class ChatTuned():
         return response["message"]
 
     def __ask__OpenAIAPI(self,message):
-        pass
+        ret_completion = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=message,
+            temperature=1,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        return ret_completion["choices"][0]["text"]
 
     def ask(self, message):
         return self.ask_options[self.API](message)

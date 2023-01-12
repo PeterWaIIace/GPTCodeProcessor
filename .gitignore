@@ -3,3 +3,5 @@ resources/dummy.py
 *.pyc
 __pycache__/*
 config.json
+*.pyc
+config.json

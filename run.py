@@ -40,7 +40,10 @@ def getLatestResponse():
 @bottle.route('/read/<filename>')
 def readFiles(filename="dummy.py"):
     root = os.path.join(os.path.dirname(__file__), 'resources')
-    return bottle.static_file(filename, root=root)
+
+    response = bottle.static_file(filename, root=root)
+    response.set_header("Cache-Control", "public, max-age=1")
+    return response
 
 @bottle.post('/buttons/start')
 def buttonStart():
