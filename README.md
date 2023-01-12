@@ -1,9 +1,10 @@
-![image](https://user-images.githubusercontent.com/40773550/211395367-4f5a5de9-073c-4184-aee6-048093da670b.png)
+![image](https://user-images.githubusercontent.com/40773550/212150679-6d1df00d-f780-4cc8-9eea-2cf8de94a97a.png)
 
 # deps:
 
 - python bottle server
 - revChatGPT
+- openai api
 
 # GPTCodeProcessor
 
