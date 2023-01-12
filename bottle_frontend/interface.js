@@ -45,7 +45,8 @@ function PromptInput()
                     'Content-Type': 'application/json'
                   },
                 body: JSON.stringify({
-                    "prompt":prompt
+                    "prompt":prompt,
+                    "API": document.getElementById("dAPI").textContent
                 })
             }
         ).catch(error   => console.error('Error:', error));
@@ -59,6 +60,11 @@ function PromptInput()
         ).catch(error   => console.error('Error:', error));
     }
 
+    const onDropdownChoice = event =>
+    {
+        document.getElementById("dAPI").textContent = event.target.text;
+    }
+
     return (
         <div>
             <textarea  style={{width: "100%",height: "150px"}}
@@ -66,6 +72,16 @@ function PromptInput()
             </textarea>
             <button onClick={onPressGenerate} className="btn btn-primary m-1" title="Send Prompt">Generate</button>
             <button onClick={onPressStop} className="btn btn-primary m-1" title="Send Prompt">Stop</button>
+
+            <div className="btn-group">
+                <button type="button" id="dAPI" className="btn btn-primary m-1 dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    revChatGPT
+                </button>
+                <div className="dropdown-menu" aria-labelledby="dLabel">
+                    <a className="dropdown-item" onClick={onDropdownChoice} href="#">revChatGPT</a>
+                    <a className="dropdown-item" onClick={onDropdownChoice} href="#">OpenAIAPI</a>
+                </div>
+            </div>
         </div>
     );
 };

@@ -1,4 +1,5 @@
 from revChatGPT.ChatGPT import Chatbot
+import openai
 import subprocess
 import json
 import time
@@ -6,22 +7,35 @@ import os
 
 class ChatTuned():
 
-    def __init__(self,init_message):
+    def __init__(self,init_message,API="revChatGPT"):
+        self.ask_options  = {"revChatGPT":self.__ask__revChatGPT,"OpenAIAPI":self.__ask__OpenAIAPI}
+        self.init_options = {"revChatGPT":self.__init__revChatGPT,"OpenAIAPI":self.__init__OpenAIAPI}
+
         self.stop_override = False
         self.init_message = init_message
+        self.API = API
 
         with open("config.json") as f:
             config = json.load(f)
 
+        self.init_options[self.API](config[self.API])
+
+    def __init__OpenAIAPI(self,config):
+        openai.organization = config["organization"]
+        openai.api_key = config["apiKey"]
+        print(openai.Model.list())
+
+    def __init__revChatGPT(self, config):
         self.chatbot  = Chatbot(config, conversation_id=None, parent_id=None)
         self.conversation_id = self.chatbot.conversation_id
 
         self.response = self.ask(self.init_message)
 
+
     def stop(self):
         self.stop_override = True
 
-    def ask(self, message):
+    def __ask__revChatGPT(self,message):
         success = False
         response = ""
 
@@ -37,17 +51,26 @@ class ChatTuned():
         self.stop_override = False
         return response["message"]
 
+    def __ask__OpenAIAPI(self,message):
+        pass
+
+    def ask(self, message):
+        return self.ask_options[self.API](message)
+
 
 class CodeGenerator():
 
     def __init__(self,prompt_file):
         self.init_message = ""
+        self.API = "revChatGPT"
         with open(prompt_file,"r") as fjs:
-            self.init_message = json.load(fjs)["prompt"]
+            prompt_config     = json.load(fjs)
+            self.init_message = prompt_config["prompt"]
+            self.API          = prompt_config["API"]
 
         print(self.init_message)
 
-        self.chatbot = ChatTuned(self.init_message)
+        self.chatbot = ChatTuned(self.init_message,API=self.API)
         # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.filename = "resources/dummy.py"
 
@@ -123,7 +146,7 @@ class CodeGenerator():
         rc = process.poll()
         return output
 
-# if __name__=="__main__":
+if __name__=="__main__":
 # returns {'message':message, 'conversation_id':self.conversation_id, 'parent_id':self.parent_id}
-    # generator = CodeGenerator("Python","No input","Hello World","Program generates and prints output")
-    # generator.run()
+    generator = CodeGenerator("Python","No input","Hello World","Program generates and prints output")
+    generator.run()
