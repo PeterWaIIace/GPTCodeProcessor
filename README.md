@@ -12,11 +12,14 @@ Using chatGPT (based on reversed Engineered API) to generate runable python code
 
 Make ChatGPT generate code!
 
+RevChatGPT can be less resilent due to its reversed engineered nature and being based on highly used ChatGPT - which is currently in demand.
+
 # How to run
 
 1. Checkout out repo
 2. Install dependencies
-3. execute `python3 run.py`
-4. open `http://localhost:8000`
+3. Set your OpenAI API keys or session-id for revChatGPT in `config.json`
+4. execute `python3 run.py`
+5. open `http://localhost:8000`
 
 # [WIP]
