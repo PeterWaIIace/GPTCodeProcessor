@@ -3,6 +3,7 @@ import openai
 import subprocess
 import json
 import time
+import sys
 import os
 
 class ChatTuned():
@@ -24,13 +25,11 @@ class ChatTuned():
         # print(config["organization"])
         openai.organization = config["organization"]
         openai.api_key = config["apiKey"]
-        # print(openai.Model.list())
+        print(openai.api_key)
 
     def __init__revChatGPT(self, config):
         self.chatbot  = Chatbot(config, conversation_id=None, parent_id=None)
         self.conversation_id = self.chatbot.conversation_id
-
-        self.response = self.ask(self.init_message)
 
 
     def stop(self):
@@ -53,6 +52,8 @@ class ChatTuned():
         return response["message"]
 
     def __ask__OpenAIAPI(self,message):
+        print(openai.api_key)
+
         ret_completion = openai.Completion.create(
             model="text-davinci-003",
             prompt=message,
@@ -77,7 +78,7 @@ class PromptBuilder:
         self.inputParameters  = inputParameters
         self.outputParameters = outputParameters
 
-        self.program_description = "Program: {programDescription}\n"+\
+        self.program_description = f"Program: {programDescription}\n"+\
             f"Program Input:  {inputParameters}\n"+\
             f"Program Output: {outputParameters}\n"
 
@@ -155,17 +156,22 @@ class CodeGenerator():
         code   = ""
         output = ""
 
+        print(f"Another step {previous_result}",file=sys.stdout)
         if previous_result:
             new_prompt    = self.builder.get_debug_prompt(previous_result)
+            print(f"new_prompt:{new_prompt}",file=sys.stdout)
             response_json = self.request_code(new_prompt)
         else:
-            response_json = self.request_code(self.init_message)
+            init_prompt = self.builder.get_initial_prompt()
+            print(f"init_prompt: {init_prompt}",file=sys.stdout)
+            response_json = self.request_code(init_prompt)
 
         if "CODE" in response_json:
             code = response_json["CODE"]
             self.update_file(code)
 
         output = self.run_file()
+        print(f"output: {output}")
 
         return output
 

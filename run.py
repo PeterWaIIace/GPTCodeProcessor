@@ -68,4 +68,4 @@ def buttonStart():
         generator.stop()
     generator_thread.join()
 
-run(host='localhost', port=8080, debug=True)
+run(host='localhost', port=8080, debug=None)
