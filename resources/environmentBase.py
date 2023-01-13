@@ -9,13 +9,6 @@ if __name__=="__main__":
 
     passed_tests = []
 
-    for n,_ in enumerate(test_outputs):
+    <TESTED_FUNCTION_CALLS>
 
-        if(len(test_inputs) > n):
-            output = <TESTED_FUNCTION_CALL>(test_inputs[n])
-            passed_tests.append(output == test_outputs[n])
-        else:
-            output = <TESTED_FUNCTION_CALL>()
-            passed_tests.append(output == test_outputs[n])
-
-    print(not all(passed_tests)) # this statement will return result to stdout
+    print(all(passed_tests)) # this statement will return result to stdout
