@@ -1,4 +1,5 @@
 # WIP
+import sys
 
 <TESTED_FUNCTION_BODY>
 
@@ -11,4 +12,4 @@ if __name__=="__main__":
 
     <TESTED_FUNCTION_CALLS>
 
-    print(all(passed_tests)) # this statement will return result to stdout
+    sys.stdout.buffer.write(bytes(passed_tests))

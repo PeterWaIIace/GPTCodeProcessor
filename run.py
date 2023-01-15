@@ -3,6 +3,7 @@ from Codeproc import CodeGenerator
 import threading
 import bottle
 import json
+import time
 import os
 
 prompt_file = "initprompt.json"
@@ -17,8 +18,12 @@ def codeGenThread():
     generator = CodeGenerator(prompt_file)
 
     while generate:
-        response = generator.step(response)
+        response,passed = generator.step(response)
         latest_response = response
+        print(passed)
+        time.sleep(10)
+        if(passed):
+            generate = False
 
     print("Generator Stopped")
 
@@ -68,4 +73,4 @@ def buttonStart():
         generator.stop()
     generator_thread.join()
 
-run(host='localhost', port=8080, debug=None)
+run(host='localhost', port=8080, debug=None, quiet=True)

@@ -3,16 +3,16 @@ const {useState} = React;
 let language_placeholder = "Python"
 
 let prompt_parameters = {
-    "programDescription"      : "Program do not take input and print output",
-    "inputReqs"               : "No input\n",
-    "outputReqs"              : "Hello world"
+    "functionDescription"      : "function do not take input and print output",
+    "inputReqs"                : "No input\n",
+    "outputReqs"               : "Hello world"
 };
 
 
 function CodeView()
 {
     const [displayedText, setDisplayedText] = useState("");
-    // // TO DO: make fetch request to local server
+
     setInterval(function() {
         fetch(`${window.location.origin}/read/dummy.py`, {cache: "no-store"})
         .then(response => response.text())
@@ -30,13 +30,13 @@ function CodeView()
 
 function PromptInput()
 {
-    const [inputProgramDescription, setProgramDescription]   = useState(prompt_parameters["programDescription"]);
+    const [inputfunctionDescription, setfunctionDescription]   = useState(prompt_parameters["functionDescription"]);
     const [inputReqs, setInputReqs]   = useState(prompt_parameters["inputReqs"]);
     const [outputReqs, setOutputReqs] = useState(prompt_parameters["outputReqs"]);
 
-    const handleProgramDescriptionChange = event => {
-        setProgramDescription(event.target.value);
-        prompt_parameters["programDescription"] = event.target.value;
+    const handlefunctionDescriptionChange = event => {
+        setfunctionDescription(event.target.value);
+        prompt_parameters["functionDescription"] = event.target.value;
     }
 
     const handleOutputReqsChange = event => {
@@ -95,9 +95,9 @@ function PromptInput()
             </div>
 
             <div className="row">
-                Program Description
+                function Description
                 <textarea  style={{width: "100%",height: "100px"}}
-                    type="text" id="inputReqs" name="fname" value={inputProgramDescription} onChange={handleProgramDescriptionChange}>
+                    type="text" id="inputReqs" name="fname" value={inputfunctionDescription} onChange={handlefunctionDescriptionChange}>
                 </textarea>
                 Input description
                 <textarea  style={{width: "100%",height: "100px"}}

@@ -1,1 +1,1 @@
-{"prompt": "I want you to write program in Python. You are allowed to respond only in JSON. No explanation. No English text.\nProgram: Program generates and prints output\nProgram Input: Integer number Program Output: Square value of x Respond with JSON having one field \"CODE\" with Python code.", "API": "OpenAIAPI"}
+{"input": "No input\n", "output": "Hello world32231", "API": "OpenAIAPI"}

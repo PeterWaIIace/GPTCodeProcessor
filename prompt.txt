@@ -1,0 +1,5 @@
+function: <functionDescription>
+function Input:  <inputParameters>
+function Output: <outputParameters>
+I want you to write function in <LANGUAGE>. You are allowed to respond only in JSON. No explanation. No English text.
+Respond with JSON having field "CODE" with <LANGUAGE> code and "Inputs" with list of possible inputs and "Outputs" with respective expected outputs.

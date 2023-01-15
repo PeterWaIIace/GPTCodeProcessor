@@ -6,3 +6,4 @@ config.json
 *.pyc
 config.json
 initprompt.json
+config.json

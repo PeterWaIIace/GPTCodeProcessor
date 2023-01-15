@@ -1,4 +1,7 @@
 from revChatGPT.ChatGPT import Chatbot
+from PromptBuilder import PromptBuilder
+import BlackBoxManager as BBM
+import logging
 import openai
 import subprocess
 import json
@@ -28,6 +31,7 @@ class ChatTuned():
         print(openai.api_key)
 
     def __init__revChatGPT(self, config):
+        # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.chatbot  = Chatbot(config, conversation_id=None, parent_id=None)
         self.conversation_id = self.chatbot.conversation_id
 
@@ -69,38 +73,7 @@ class ChatTuned():
         return self.ask_options[self.API](message)
 
 # Prompt builder
-class PromptBuilder:
 
-    def __init__(self,language,inputParameters,outputParameters,programDescription = ""):
-        self.languagePlaceholder = "Python"
-
-        self.programDescription = programDescription
-        self.inputParameters  = inputParameters
-        self.outputParameters = outputParameters
-
-        self.program_description = f"Program: {programDescription}\n"+\
-            f"Program Input:  {inputParameters}\n"+\
-            f"Program Output: {outputParameters}\n"
-
-        self.init_prompt = "I want you to write program in Python. You are allowed to respond only in JSON. No explanation. No English text.\n"+\
-            self.program_description+\
-            "Respond with JSON having field \"CODE\" with Python code and \"Inputs\" with list of possible inputs and \"Outputs\" with respective expected outputs."
-
-        self.init_prompt.replace(self.languagePlaceholder,language)
-
-    def get_initial_prompt(self):
-        return self.init_prompt
-
-    def get_debug_prompt(self,output):
-
-        # with open(filename, "r") as f:
-        #     file_content = f.read()
-
-        debug_prompt = f"Code generated following output: ```{output}```\n"+\
-                             "If output is result of bug, or unexpected exception, provide fixed code in new JSON.\n"+\
-                            f"If output matches expected pattern: `{self.outputParameters}` then provide answer `CODE IS CORRECT`"
-
-        return debug_prompt
 class CodeGenerator():
 
     def __init__(self,prompt_file):
@@ -115,7 +88,6 @@ class CodeGenerator():
         self.builder = PromptBuilder("Python",self.input,self.output)
 
         self.chatbot = ChatTuned(self.builder.get_initial_prompt(),API=self.API)
-        # https://github.com/acheong08/ChatGPT/wiki/Setup
         self.filename = "resources/dummy.py"
 
     def stop(self):
@@ -125,61 +97,64 @@ class CodeGenerator():
         return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
 
     def request_code(self,message):
-        code = ""
-        self.response = self.chatbot.ask(message)
+        response = self.chatbot.ask(message)
 
         correct_format = False
 
         while not correct_format:
             try:
-                print(self.response)
-                first_pos   = self.response.find('{')
-                second_pos  = len(self.response) - self.response[-1:].find('}')
-                tmp_message = self.response[first_pos:second_pos]
+                print(response)
+                first_pos   = response.find('{')
+                second_pos  = len(response) - response[-1:].find('}')
+                tmp_message = response[first_pos:second_pos]
 
-                code  = json.loads(tmp_message)
+                print(f"tmp_message:{tmp_message}")
+                response  = json.loads(tmp_message)
                 correct_format = True
 
             except Exception as e:
                 print(f"exception: {e}")
-                self.response = self.send_exception(e)
+                response = self.send_exception(e)
 
-        print(f"code: {code}")
-        return code
+        print(f"response: {response}")
+        return response
 
     def update_file(self,code):
         print("updating file:",code)
         with open(self.filename,"w") as f:
             f.write(code)
 
+    def runTest(self,code,inputs,outputs):
+        nameStart = code.find("def ") + len("def ")
+        nameEnd   = code.find("()")
+
+        funcName = code[nameStart:nameEnd]
+
+        bbTest = BBM.BBTest(envFileName=f"gen_test_{funcName}.py")
+
+        bbTest.generateTest(funcName,code,inputs,outputs)
+        return all(bbTest.runTest())
+
     def step(self,previous_result : str = None):
         code   = ""
         output = ""
 
-        print(f"Another step {previous_result}",file=sys.stdout)
         if previous_result:
             new_prompt    = self.builder.get_debug_prompt(previous_result)
-            print(f"new_prompt:{new_prompt}",file=sys.stdout)
-            response_json = self.request_code(new_prompt)
+            responseJSON = self.request_code(new_prompt)
         else:
             init_prompt = self.builder.get_initial_prompt()
-            print(f"init_prompt: {init_prompt}",file=sys.stdout)
-            response_json = self.request_code(init_prompt)
+            responseJSON = self.request_code(init_prompt)
 
-        if "CODE" in response_json:
-            code = response_json["CODE"]
+        if "CODE" in responseJSON:
+            code = responseJSON["CODE"]
             self.update_file(code)
 
-        output = self.run_file()
-        print(f"output: {output}")
+        output     = self.run_file()
+        passed     = self.runTest(code,responseJSON["Inputs"],responseJSON["Outputs"])
 
-        return output
-
-    def run(self):
-        response = None
-
-        while True:
-            response = self.step(response)
+        print(f"output:{output},passed:{passed}")
+        return output,passed
 
     def run_file(self):
         os.environ['PYTHONUNBUFFERED'] = '1'
