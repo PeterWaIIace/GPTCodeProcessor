@@ -18,11 +18,9 @@ class PromptBuilder:
         prompt = prompt.replace(inputParametersPlaceholder ,inputParameters)
         prompt = prompt.replace(outputParametersPlaceholder,outputParameters)
 
-        print(prompt)
         self.init_prompt = prompt
 
     def get_initial_prompt(self):
-        print(self.init_prompt)
         return self.init_prompt
 
     def get_debug_prompt(self,output):

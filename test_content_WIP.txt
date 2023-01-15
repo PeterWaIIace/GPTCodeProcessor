@@ -1,0 +1,21 @@
+
+such response crashes code:
+1.
+
+{
+  "CODE": "def myFunc(dic):
+    return dic['MESSAGE']",
+  "Inputs": [ {"MESSAGE": "Hello World!"} ],
+  "Outputs": ["Hello World!"]
+}
+
+2.
+
+{
+  "CODE": "def function(data):
+  return data['MESSAGE']",
+    "Inputs": [
+        { "MESSAGE": "Hello world!" }
+    ],
+    "Outputs": ["Hello world!"]
+}

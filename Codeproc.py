@@ -131,7 +131,6 @@ class CodeGenerator():
         funcName = code[nameStart:nameEnd]
 
         bbTest = BBM.BBTest(envFileName=f"gen_test_{funcName}.py")
-
         bbTest.generateTest(funcName,code,inputs,outputs)
         return all(bbTest.runTest())
 
