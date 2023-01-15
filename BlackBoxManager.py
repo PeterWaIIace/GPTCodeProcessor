@@ -1,15 +1,44 @@
 # WIP
 import subprocess
 import os
+
+BB_ENV_NAME = "./BlackBoxShadowRealm/"
+class BBManager:
+
+    def __init__(self):
+
+        self.resourceDir  = BB_ENV_NAME
+        self.baseFileName = self.resourceDir+"environmentBase.py"
+        self.baseFile = "import sys\n"+\
+        "\n"+\
+        "<TESTED_FUNCTION_BODY>\n"+\
+        "\n"+\
+        "test_inputs  = <TEST_INPUTS>\n"+\
+        "test_outputs = <TEST_OUTPUTS>\n"+\
+        "\n"+\
+        "if __name__==\"__main__\":\n"+\
+        "\n"+\
+        "    passed_tests = []\n"+\
+        "\n"+\
+        "    <TESTED_FUNCTION_CALLS>\n"+\
+        "\n"+\
+        "    sys.stdout.buffer.write(bytes(passed_tests))"
+
+        os.makedirs(os.path.dirname(self.baseFileName), exist_ok=True)
+        with open(self.baseFileName,"w") as f:
+            f.write(self.baseFile)
+
+        print("Created")
+
 class BBTest:
 
-    def __init__(self,envFilePath="resources",envFileName="python_test_env.py"):
+    def __init__(self,envFileName="python_test_env.py"):
         self.ptrFuncBody       = "<TESTED_FUNCTION_BODY>"
         self.ptrFuncInvocation = "<TESTED_FUNCTION_CALLS>"
         self.ptrInputs         = "<TEST_INPUTS>"
         self.ptrOutputs        = "<TEST_OUTPUTS>"
 
-        self.envFilePath = envFilePath
+        self.envFilePath = BB_ENV_NAME
         self.envFileName = envFileName
         self.envBaseFileName = "environmentBase.py"
 
@@ -133,6 +162,8 @@ class BBTest:
                 report[n] = {"funcName":self.funcName,"inputs":[],"outputs":self.outputs,"pass":results[n]}
 
         return report,not error
+
+BBManager()
 
 if __name__=="__main__":
     bbTest = BBTest(envFileName="gen_test_hello_world.py")

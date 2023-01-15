@@ -1,4 +1,3 @@
-# WIP
 import sys
 
 <TESTED_FUNCTION_BODY>

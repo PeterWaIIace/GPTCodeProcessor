@@ -74,6 +74,15 @@ class ChatTuned():
 
 # Prompt builder
 
+def extractJsonPromptResponse(response):
+    first_pos   = response.find('{')
+    second_pos  = len(response) - response[-1:].find('}')
+    tmp_message = response[first_pos:second_pos]
+
+    response  = json.loads(tmp_message)
+
+    return json
+
 class CodeGenerator():
 
     def __init__(self,prompt_file):
@@ -103,13 +112,7 @@ class CodeGenerator():
 
         while not correct_format:
             try:
-                print(response)
-                first_pos   = response.find('{')
-                second_pos  = len(response) - response[-1:].find('}')
-                tmp_message = response[first_pos:second_pos]
-
-                print(f"tmp_message:{tmp_message}")
-                response  = json.loads(tmp_message)
+                response = extractJsonPromptResponse(response)
                 correct_format = True
 
             except Exception as e:
