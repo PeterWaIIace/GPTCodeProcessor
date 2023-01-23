@@ -163,6 +163,66 @@ class BBTest:
 
         return report,not error
 
+class FunctionObject:
+
+    def __init__(self,functionName,startLine):
+        self.stopLine = 0
+        self.startLine = startLine
+        self.functionName = functionName
+        self.code         = ''
+
+    def setStartLine(self,startLine):
+        self.startLine = startLine
+
+    def startLine(self):
+        return self.startLine
+
+    def setStopLine(self,stopLine):
+        self.stopLine = stopLine
+
+    def appendLine(self,line):
+        self.code += line
+
+class FileScanner:
+
+    def __init__(self):
+        pass
+
+    def scanFile(self,fileName=None,funcName=None):
+        funcObj = None
+
+        if not fileName or not funcName:
+            return None
+
+        with open(fileName, 'r') as f:
+            funcObj = self.functionExtractor(f,funcName)
+
+        return funcObj
+
+    def functionExtractor(self,fileObject,funcName):
+        line = 'start' ## dummy word to start
+        funcObj = None
+        line_num = 0
+
+        while len(line) != 0:
+            line = fileObject.readline()
+            if funcName in line and "def" in line: ## Python dependent
+                funcObj = FunctionObject(funcName,line_num)
+
+            if funcObj:
+                if funcObj.startLine != line_num and "def" in line:
+                    funcObj.setStopLine(line_num)
+                    break
+
+                else:
+                    funcObj.appendLine(line)
+
+
+            line_num += 1
+
+        return funcObj
+
+
 BBManager()
 
 if __name__=="__main__":
@@ -173,3 +233,11 @@ if __name__=="__main__":
     bbTest = BBTest(envFileName="gen_test_mul.py")
     bbTest.generateTest("mul","def mul(x,y):\n   return x*y",[[1,1],[2,2],[3,3]],[1,4,9])
     print(bbTest.runTest())
+
+    fscan = FileScanner()
+
+    funcObj = fscan.scanFile('test_file_python.py','func1')
+    print(funcObj.code)
+
+    funcObj = fscan.scanFile('test_file_python.py','func3')
+    print(funcObj.code)

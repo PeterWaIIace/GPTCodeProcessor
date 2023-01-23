@@ -1,6 +1,6 @@
 from revChatGPT.ChatGPT import Chatbot
 from PromptBuilder import PromptBuilder
-import BlackBoxManager as BBM
+import BBTF.BlackBoxManager as BBM
 import logging
 import openai
 import subprocess
@@ -74,7 +74,7 @@ class ChatTuned():
 
 # Prompt builder
 
-def extractJsonPromptResponse(response):
+def response2JSON(response):
     first_pos   = response.find('{')
     second_pos  = len(response) - response[-1:].find('}')
     tmp_message = response[first_pos:second_pos]
@@ -112,7 +112,7 @@ class CodeGenerator():
 
         while not correct_format:
             try:
-                response = extractJsonPromptResponse(response)
+                response = response2JSON(response)
                 correct_format = True
 
             except Exception as e:
