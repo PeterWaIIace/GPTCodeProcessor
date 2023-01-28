@@ -1,0 +1,6 @@
+{"CODE": "def function(data):\n     return data['MESSAGE']",
+    "Inputs": [
+        { "MESSAGE": "Hello world!" }
+    ],
+    "Outputs": ["Hello world!"]
+}

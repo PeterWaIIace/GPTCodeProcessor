@@ -5,7 +5,7 @@
 - python bottle server
 - revChatGPT
 - openai api
-
+- https://github.com/PeterWaIIace/BlackBoxTesting
 # GPTCodeProcessor
 
 Using chatGPT (based on reversed Engineered API) to generate runable python code, fix errors in runtime and finally have someone to do my job.
@@ -22,4 +22,7 @@ RevChatGPT can be less resilent due to its reversed engineered nature and being 
 4. execute `python3 run.py`
 5. open `http://localhost:8000`
 
-# [WIP]
+
+# Project is based on BlackBoxTesting Framework:
+
+https://github.com/PeterWaIIace/BlackBoxTesting

@@ -1,1 +1,1 @@
-{"input": "Input is dictionary with field \"MESSAGE\"\n", "output": "output is content of \"MESSAGE\" field", "API": "OpenAIAPI"}
+{"input": "No input\n", "output": "Hello world", "API": "OpenAIAPI"}

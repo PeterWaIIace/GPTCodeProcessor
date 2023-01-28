@@ -1,6 +1,6 @@
 from revChatGPT.ChatGPT import Chatbot
 from PromptBuilder import PromptBuilder
-import BBTF.BlackBoxManager as BBM
+from BlackBoxManager import BBTest
 import logging
 import openai
 import subprocess
@@ -74,14 +74,20 @@ class ChatTuned():
 
 # Prompt builder
 
+## TMP Save JSON to file and then read it again to get proper json formatting
 def response2JSON(response):
     first_pos   = response.find('{')
     second_pos  = len(response) - response[-1:].find('}')
     tmp_message = response[first_pos:second_pos]
+    response = {}
 
-    response  = json.loads(tmp_message)
+    with open("tmp.json","w") as fJson:
+        fJson.write(tmp_message)
 
-    return json
+    with open("tmp.json","r") as fJson:
+        response  = json.load(fJson)
+
+    return response
 
 class CodeGenerator():
 
@@ -119,7 +125,6 @@ class CodeGenerator():
                 print(f"exception: {e}")
                 response = self.send_exception(e)
 
-        print(f"response: {response}")
         return response
 
     def update_file(self,code):
@@ -133,9 +138,9 @@ class CodeGenerator():
 
         funcName = code[nameStart:nameEnd]
 
-        bbTest = BBM.BBTest(envFileName=f"gen_test_{funcName}.py")
+        bbTest = BBTest()
         bbTest.generateTest(funcName,code,inputs,outputs)
-        return all(bbTest.runTest())
+        return all(bbTest.runTest()) ## This will fail as wrong test report is not processed correctly
 
     def step(self,previous_result : str = None):
         code   = ""
@@ -143,9 +148,9 @@ class CodeGenerator():
 
         if previous_result:
             new_prompt    = self.builder.get_debug_prompt(previous_result)
-            responseJSON = self.request_code(new_prompt)
+            responseJSON  = self.request_code(new_prompt)
         else:
-            init_prompt = self.builder.get_initial_prompt()
+            init_prompt  = self.builder.get_initial_prompt()
             responseJSON = self.request_code(init_prompt)
 
         if "CODE" in responseJSON:
@@ -155,7 +160,6 @@ class CodeGenerator():
         output     = self.run_file()
         passed     = self.runTest(code,responseJSON["Inputs"],responseJSON["Outputs"])
 
-        print(f"output:{output},passed:{passed}")
         return output,passed
 
     def run_file(self):

@@ -1,4 +1,1 @@
-def helloWorld54():
-  print('Hello world54')
-
-helloWorld54()
+def hello_world(): return "Hello world"

@@ -1,0 +1,1 @@
+{"CODE": "def myFunc(dic):\n    return dic['MESSAGE']","Inputs": [ {"MESSAGE": "Hello World!"} ],"Outputs": ["Hello World!"]}

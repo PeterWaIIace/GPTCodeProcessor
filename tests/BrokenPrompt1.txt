@@ -1,0 +1,8 @@
+{"CODE": 
+"def helloWorld():
+        some_tricky_dict = {\"hello\":\"it is a trap\"}
+        some_tricky_array = [\"hello\",\"it is a trap\",\"it is a trap\"]
+        return \"Hello world\""
+,
+"Inputs": [],
+"Outputs": ["Hello world"]}

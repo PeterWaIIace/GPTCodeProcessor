@@ -1,10 +1,9 @@
 import sys
 
-def hello_world():
-   return "hello world"
+def hello_world(): return "Hello world"
 
 test_inputs  = []
-test_outputs = ['hello world']
+test_outputs = ['Hello world']
 
 if __name__=="__main__":
 
