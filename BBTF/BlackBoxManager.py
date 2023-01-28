@@ -237,8 +237,14 @@ if __name__=="__main__":
 
     fscan = FileScanner()
 
-    funcObj = fscan.scanFile('test_file_python.py','func1')
-    print(funcObj.code)
+    funcName = 'func1'
+    bbTest = BBTest(envFileName=f"gen_test_{funcName}.py")
+    funcObj = fscan.scanFile('test_file_python.py',funcName)
+    bbTest.generateTest(funcName,funcObj.code,[[1,1],[2,2],[3,3]],[2,4,6])
+    print(bbTest.runTest())
 
-    funcObj = fscan.scanFile('test_file_python.py','func3')
-    print(funcObj.code)
+    funcName = 'func3'
+    bbTest = BBTest(envFileName=f"gen_test_{funcName}.py")
+    funcObj = fscan.scanFile('test_file_python.py',funcName)
+    bbTest.generateTest(funcName,funcObj.code,[[1,1],[2,2],[3,3]],[2,4,6])
+    print(bbTest.runTest())
