@@ -206,11 +206,12 @@ class FileScanner:
 
         while len(line) != 0:
             line = fileObject.readline()
+            rline = line.replace('\n','\\n')
             if funcName in line and "def" in line: ## Python dependent
                 funcObj = FunctionObject(funcName,line_num)
 
             if funcObj:
-                if funcObj.startLine != line_num and "def" in line:
+                if funcObj.startLine != line_num and '\\n' == rline:
                     funcObj.setStopLine(line_num)
                     break
 
