@@ -10,6 +10,5 @@ config.json
 My-config.json
 BBTF/BlackBoxShadowRealm/*
 BlackBoxShadowRealm/*
-*.py
 BlackBoxShadowRealm/gen_test_hello_world.py
 initprompt.json

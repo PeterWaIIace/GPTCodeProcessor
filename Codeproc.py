@@ -2,7 +2,8 @@ from revChatGPT.ChatGPT import Chatbot
 from PromptBuilder import PromptBuilder
 from PromptSanitizer import PromptSanitizer
 from BlackBoxManager import BBTest
-from functools import cache
+from functools   import cache
+from PromptCache import promptCache, promptCacheClearEntry
 import logging
 import openai
 import subprocess
@@ -121,6 +122,7 @@ class CodeGenerator():
     def send_exception(self,e):
         return self.chatbot.ask("{\"Exception\":\""+ str(e) +"\"}. Fix JSON. No text beyond JSON.")
 
+    @promptCache
     def request_code(self,message):
         response = self.chatbot.ask(message)
 
@@ -155,14 +157,15 @@ class CodeGenerator():
     def step(self,previous_result : str = None):
         code   = ""
         output = ""
+        prompt = ""
 
         start=time.perf_counter()
         if previous_result:
-            new_prompt    = self.builder.get_debug_prompt(previous_result)
-            responseJSON  = self.request_code(new_prompt)
+            prompt    = self.builder.get_debug_prompt(previous_result)
+            responseJSON  = self.request_code(prompt)
         else:
-            init_prompt  = self.builder.get_initial_prompt()
-            responseJSON = self.request_code(init_prompt)
+            prompt  = self.builder.get_initial_prompt()
+            responseJSON = self.request_code(prompt)
 
         elapsed=time.perf_counter() - start
         print(f"Done in = f{elapsed:.2f}")
@@ -173,6 +176,10 @@ class CodeGenerator():
 
         output     = self.run_file()
         passed     = self.runTest(code,responseJSON["Inputs"],responseJSON["Outputs"])
+
+        # clear cache if prompt return text is invalid
+        if not passed:
+            promptCacheClearEntry(prompt)
 
         return output,passed
 
