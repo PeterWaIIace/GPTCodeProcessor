@@ -156,12 +156,16 @@ class CodeGenerator():
         code   = ""
         output = ""
 
+        start=time.perf_counter()
         if previous_result:
             new_prompt    = self.builder.get_debug_prompt(previous_result)
             responseJSON  = self.request_code(new_prompt)
         else:
             init_prompt  = self.builder.get_initial_prompt()
             responseJSON = self.request_code(init_prompt)
+
+        elapsed=time.perf_counter() - start
+        print(f"Done in = f{elapsed:.2f}")
 
         if "CODE" in responseJSON:
             code = responseJSON["CODE"]
