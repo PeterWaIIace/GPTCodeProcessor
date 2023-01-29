@@ -1,4 +1,4 @@
-{"CODE": "def function(data):\n     return data['MESSAGE']",
+{"CODE": "def function(data):\n  return data['MESSAGE']",
     "Inputs": [
         { "MESSAGE": "Hello world!" }
     ],

@@ -3,7 +3,7 @@ import sys
 import os
 sys.path.append(os.path.abspath('..'))
 
-from PromptSanitizer import dictSanitizer
+from PromptSanitizer import PromptSanitizer
 
 def test_broken_prompt_1():
     lines = ""
@@ -15,8 +15,14 @@ def test_broken_prompt_1():
     with open("CorrectPrompt1.json", "r") as fJson:
         correctDict = json.load(fJson)
 
-    new_dict = dictSanitizer(lines)
-    assert(new_dict == correctDict)
+    ps = PromptSanitizer()
+    sanitezedJsonString = ps.jsonSanitizer(lines)
+    sanitazedJson= json.loads(sanitezedJsonString)
+
+    with open("tmp.json","w") as fJson:
+        json.dump(sanitezedJsonString,fJson)
+
+    assert(sanitazedJson == correctDict)
 
 def test_broken_prompt_2():
     lines = ""
@@ -28,10 +34,14 @@ def test_broken_prompt_2():
     with open("CorrectPrompt2.json", "r") as fJson:
         correctDict = json.load(fJson)
 
-    new_dict = dictSanitizer(lines)
+    ps = PromptSanitizer()
+    sanitezedJsonString = ps.jsonSanitizer(lines)
+    sanitazedJson= json.loads(sanitezedJsonString)
+
     with open("tmp.json","w") as fJson:
-        json.dump(new_dict,fJson)
-    assert(new_dict == correctDict)
+        json.dump(sanitezedJsonString,fJson)
+
+    assert(sanitazedJson == correctDict)
 
 def test_broken_prompt_3():
     lines = ""
@@ -43,5 +53,11 @@ def test_broken_prompt_3():
     with open("CorrectPrompt3.json", "r") as fJson:
         correctDict = json.load(fJson)
 
-    new_dict = dictSanitizer(lines)
-    assert(new_dict == correctDict)
+    ps = PromptSanitizer()
+    sanitezedJsonString = ps.jsonSanitizer(lines)
+    sanitazedJson= json.loads(sanitezedJsonString)
+
+    with open("tmp.json","w") as fJson:
+        json.dump(sanitezedJsonString,fJson)
+
+    assert(sanitazedJson == correctDict)

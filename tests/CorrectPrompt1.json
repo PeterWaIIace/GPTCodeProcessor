@@ -1,1 +1,1 @@
-{"CODE": "def helloWorld():\n        some_tricky_dict = {\"hello\":\"it is a trap\"}\n        some_tricky_array = [\"hello\",\"it is a trap\",\"it is a trap\"]\n        return \"Hello world\"", "Inputs": "[]"}
+{"CODE":"def helloWorld():\n        some_tricky_dict = {\"hello\":\"it is a trap\"}\n        some_tricky_array = [\"hello\",\"it is a trap\",\"it is a trap\"]\n        return \"Hello world\"","Inputs":[],"Outputs":["Hello world"]}

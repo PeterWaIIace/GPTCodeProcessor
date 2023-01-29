@@ -1,51 +1,59 @@
 import json
+import sys
 
-def dictSanitizer(lines):
-    lines = lines.replace('\n','\\n')
-    lines = lines.replace(' ','\\s')
+class PromptSanitizer:
 
-    line_new = ""
-    flag_char = False
-    string_array = []
-    prev_char = ''
-    divider = ','
-    keyValueGrouper = ':'
-    permitted_characters = ["{","}","[","]"]
+    def __init__(self):
+        self.line_new             = ""
+        self.flag_char            = False
+        self.string_array         = []
+        self.prev_char            = ''
+        self.start_character      = '{' # required for recursive call
+        self.end_character        = '}'
+        self.permitted_characters = [',',':','{','}',"[","]"]
 
-    new_dict = {}
+    def preprocessing(self,lines):
+        lines = lines.replace('\n','\\n')
+        lines = lines.replace(' ','\\s')
+        return lines
 
-    counter = 0
-    for char in lines:
-        if char == "\"" and prev_char != '\\':
-            flag_char = not flag_char
+    def postprocessing(self,line):
+        line = line.replace('\\s',' ')
+        return line
+
+    def jsonSanitizer(self,lines):
+        lines = self.preprocessing(lines)
+        sanitized, _  = self.__stringToDict(lines)
+        return sanitized
+
+    def __isPayload(self,char):
+
+        return self.flag_char
+
+    def __stringToDict(self,lines):
+        new_dict     = {}
+        counter      = 0
+        string_array = []
+
+        for char in lines:
+
             # string_array.append(char)
-        else:
-            if flag_char:
+            if char == "\"" and self.prev_char != '\\':
+                self.flag_char = not self.flag_char
                 string_array.append(char)
-                prev_char = char
+
+            if self.flag_char and not (char == "\"" and self.prev_char != '\\'):
+                string_array.append(char)
+                self.prev_char = char
             else:
-                prev_char = ''
-                if char in permitted_characters and counter > 0:
+                self.prev_char = ''
+                if char in self.permitted_characters and counter > 0:
                     string_array.append(char)
 
-                if char in divider:
-                    value = ''.join(string_array)
-                    key = key.replace('\\s',' ')
-                    key = key.replace('\\n','\n')
-                    value = value.replace('\\s',' ')
-                    value = value.replace('\\n','\n')
-                    value = value.replace('\\\"','\"')
+            counter+=1
 
-                    new_dict[key] = value
-                    string_array = []
-
-                if char in keyValueGrouper:
-                    key = ''.join(string_array)
-                    string_array = []
-
-        counter+=1
-
-    return new_dict
+        postprocessed = self.postprocessing('{'+''.join(string_array))
+        return postprocessed,counter
 
 if __name__=="__main__":
     lines = ""
@@ -53,7 +61,8 @@ if __name__=="__main__":
     with open("tmp.txt", "r") as fJson:
         lines = fJson.read()
 
-    new_dict = dictSanitizer(lines)
+    ps = PromptSanitizer()
+    new_dict = ps.dictSanitizer(lines)
 
     print(new_dict)
     with open("tmp.json", "w") as fJson:

@@ -1,1 +1,1 @@
-{"CODE": "def myFunc(dic):\n    return dic['MESSAGE']", "[{MESSAGE": "Hello World!}]"}
+"{\"CODE\":\"def function(data):\\n  return data['MESSAGE']\",\"Inputs\":[{\"MESSAGE\":\"Hello world!\"}],\"Outputs\":[\"Hello world!\"]}"
