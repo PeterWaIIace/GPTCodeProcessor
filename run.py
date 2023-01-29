@@ -11,14 +11,14 @@ generator = None
 generate = False
 generator_thread = None
 latest_response = ""
+generatorEngine = CodeGenerator(prompt_file)
 
 def codeGenThread():
     global generate,latest_response,generator
     response = None
-    generator = CodeGenerator(prompt_file)
 
     while generate:
-        response,passed = generator.step(response)
+        response,passed = generatorEngine.step(response)
         latest_response = response
         print(passed)
         time.sleep(10)
@@ -59,6 +59,7 @@ def buttonStart():
         json.dump(bottle.request.json,fjs)
 
     generate = True
+    generatorEngine.configure(prompt_file)
     generator_thread = threading.Thread(target=codeGenThread)
     generator_thread.start()
 

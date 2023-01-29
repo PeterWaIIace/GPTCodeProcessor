@@ -2,6 +2,7 @@ from revChatGPT.ChatGPT import Chatbot
 from PromptBuilder import PromptBuilder
 from PromptSanitizer import PromptSanitizer
 from BlackBoxManager import BBTest
+from functools import cache
 import logging
 import openai
 import subprocess
@@ -29,7 +30,6 @@ class ChatTuned():
         # print(config["organization"])
         openai.organization = config["organization"]
         openai.api_key = config["apiKey"]
-        print(openai.api_key)
 
     def __init__revChatGPT(self, config):
         # https://github.com/acheong08/ChatGPT/wiki/Setup
@@ -41,6 +41,8 @@ class ChatTuned():
         self.stop_override = True
 
     def __ask__revChatGPT(self,message):
+        print("__ask__revChatGPT")
+
         success = False
         response = ""
 
@@ -57,7 +59,7 @@ class ChatTuned():
         return response["message"]
 
     def __ask__OpenAIAPI(self,message):
-        print(openai.api_key)
+        print("__ask__OpenAIAPI")
 
         ret_completion = openai.Completion.create(
             model="text-davinci-003",
@@ -90,6 +92,18 @@ class CodeGenerator():
     def __init__(self,prompt_file):
         self.init_message = ""
         self.API = "revChatGPT"
+        with open(prompt_file,"r") as fjs:
+            prompt_config     = json.load(fjs)
+            self.input        = prompt_config["input"]
+            self.output       = prompt_config["output"]
+            self.API          = prompt_config["API"]
+
+        self.builder = PromptBuilder("Python",self.input,self.output)
+
+        self.chatbot = ChatTuned(self.builder.get_initial_prompt(),API=self.API)
+        self.filename = "resources/dummy.py"
+
+    def configure(self,prompt_file):
         with open(prompt_file,"r") as fjs:
             prompt_config     = json.load(fjs)
             self.input        = prompt_config["input"]
