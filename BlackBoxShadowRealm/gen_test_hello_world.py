@@ -1,6 +1,9 @@
 import sys
 
-def hello_world(): return "Hello world"
+def hello_world():
+    return 'Hello world'
+
+
 
 test_inputs  = []
 test_outputs = ['Hello world']

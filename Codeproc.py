@@ -1,5 +1,6 @@
 from revChatGPT.ChatGPT import Chatbot
 from PromptBuilder import PromptBuilder
+from PromptSanitizer import PromptSanitizer
 from BlackBoxManager import BBTest
 import logging
 import openai
@@ -79,15 +80,10 @@ def response2JSON(response):
     first_pos   = response.find('{')
     second_pos  = len(response) - response[-1:].find('}')
     tmp_message = response[first_pos:second_pos]
-    response = {}
 
-    with open("tmp.json","w") as fJson:
-        fJson.write(tmp_message)
+    ps = PromptSanitizer()
+    return json.loads(ps.jsonSanitizer(tmp_message))
 
-    with open("tmp.json","r") as fJson:
-        response  = json.load(fJson)
-
-    return response
 
 class CodeGenerator():
 
