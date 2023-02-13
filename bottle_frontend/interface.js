@@ -23,7 +23,24 @@ function CodeView()
     return (
         <div>
             <h2>Generated Code:</h2>
-            <p style={{whiteSpace: 'pre'}}>{displayedText}</p>
+            <div className="form-outline">
+                <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+            </div>
+            <h2>Test:</h2>
+            <div className="row">
+                <div className="col">
+                    <h3>Inputs:</h3>
+                    <div className="form-outline">
+                        <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+                    </div>
+                </div>
+                <div className="col">
+                    <h3>Outputs:</h3>
+                    <div className="form-outline">
+                        <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
@@ -81,46 +98,53 @@ function PromptInput()
     }
 
     return (
-        <div>
+        <div className="col">
             <div className="row">
-                Language
-                <div className="btn-group col-4 m-1">
-                    <button type="button" id="dLang" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        Python
-                    </button>
-                    <ul className="dropdown-menu" aria-labelledby="dLabel">
-                        <li><a className="dropdown-item" onClick={onDropdownChoice} href="#">Python</a></li>
-                    </ul>
+                <div className="col-3">
+                    <h2>Language</h2>
+                    <div className="btn-group col-4 m-1">
+                        <button type="button" id="dLang" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Python
+                        </button>
+                        <ul className="dropdown-menu" aria-labelledby="dLabel">
+                            <li><a className="dropdown-item" onClick={onDropdownChoice} href="#">Python</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="col-3">
+                    <h2>API</h2>
+                    <div className="btn-group col-3 m-1">
+                        <button type="button" id="dAPI" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        OpenAIAPI
+                        </button>
+                        <div className="dropdown-menu" aria-labelledby="dLabel">
+                            <a className="dropdown-item" onClick={onDropdownChoice} href="#">revChatGPT</a>
+                            <a className="dropdown-item" onClick={onDropdownChoice} href="#">OpenAIAPI</a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div className="row">
-                function Description
-                <div class="form-outline">
-                    <textarea class="form-control" id="inputReqs" rows="5"  value={inputfunctionDescription} onChange={handlefunctionDescriptionChange}></textarea>
-                </div>
-                Input description
+                <h3>Input description</h3>
                 <div class="form-outline">
                     <textarea class="form-control" id="inputReqs" rows="5"  value={inputReqs} onChange={handleInputReqsChange}></textarea>
                 </div>
-                Output description
+                <h3>Function description</h3>
+                <div class="form-outline">
+                    <textarea class="form-control" id="inputReqs" rows="5"  value={inputfunctionDescription} onChange={handlefunctionDescriptionChange}></textarea>
+                </div>
+                <h3>Output description</h3>
                 <div class="form-outline">
                     <textarea class="form-control" id="outputReqs" rows="5"  value={outputReqs} onChange={handleOutputReqsChange}></textarea>
                 </div>
             </div>
 
             <div className="row">
-                <button onClick={onPressGenerate} className="btn btn-primary m-1 col-4" title="Send Prompt">Generate</button>
-                <button onClick={onPressStop} className="btn btn-primary m-1  col-4" title="Send Prompt">Stop</button>
-
-                <div className="btn-group col-3 m-1">
-                    <button type="button" id="dAPI" className="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    OpenAIAPI
-                    </button>
-                    <div className="dropdown-menu" aria-labelledby="dLabel">
-                        <a className="dropdown-item" onClick={onDropdownChoice} href="#">revChatGPT</a>
-                        <a className="dropdown-item" onClick={onDropdownChoice} href="#">OpenAIAPI</a>
-                    </div>
+                <div className="col" align="left">
+                    <button onClick={onPressGenerate} className="btn btn-primary m-1 mt-2 col-4" title="Send Prompt">Generate</button>
+                    <button onClick={onPressStop} className="btn btn-primary m-1 mt-2 col-4" title="Send Prompt">Stop</button>
                 </div>
             </div>
         </div>
