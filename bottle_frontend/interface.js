@@ -24,20 +24,20 @@ function CodeView()
         <div>
             <h2>Generated Code:</h2>
             <div className="form-outline">
-                <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+                <textarea className="form-control" id="inputReqs" rows="17"  style={{ background: 'rgba(10,0,0,.5)'}} value={displayedText} readonly></textarea>
             </div>
             <h2>Test:</h2>
             <div className="row">
                 <div className="col">
                     <h3>Inputs:</h3>
                     <div className="form-outline">
-                        <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedText} readonly></textarea>
                     </div>
                 </div>
                 <div className="col">
                     <h3>Outputs:</h3>
                     <div className="form-outline">
-                        <textarea className="form-control" id="inputReqs" rows="5"  value={displayedText} readonly></textarea>
+                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedText} readonly></textarea>
                     </div>
                 </div>
             </div>
@@ -172,6 +172,11 @@ function PromptResponse()
 
 ReactDOM.render(
     <div className="container">
+        <div className="row">
+            <div className="col" align="center">
+                <h1>CodeGenerator</h1>
+            </div>
+        </div>
         <div className="row">
             <div className="col-sm">
                 <CodeView></CodeView>
