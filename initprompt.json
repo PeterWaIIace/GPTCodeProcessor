@@ -1,1 +1,1 @@
-{"input": "No input\n", "output": "Hello world", "API": "OpenAIAPI"}
+{"input": "name\n", "output": "Hello world + Name", "API": "OpenAIAPI"}

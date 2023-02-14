@@ -42,6 +42,15 @@ def getLatestResponse():
     global latest_response
     return latest_response
 
+@bottle.route('/readJson/<filename>')
+def readJson(filename="raw.json"):
+    root = 'resources'
+
+    retDict = {}
+    with open(root+"/"+filename) as fJson:
+        retDict = json.load(fJson)
+    return retDict
+
 @bottle.route('/read/<filename>')
 def readFiles(filename="dummy.py"):
     root = os.path.join(os.path.dirname(__file__), 'resources')
@@ -74,4 +83,4 @@ def buttonStart():
         generator.stop()
     generator_thread.join()
 
-run(host='localhost', port=8080, debug=None, quiet=True)
+run(host='localhost', port=8080, debug=True, quiet=False)

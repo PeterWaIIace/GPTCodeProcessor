@@ -4,11 +4,15 @@ cachedVars = {}
 
 def promptCache(func):
 
-    def promptWrapper(prompt):
+    def promptWrapper(self=None,prompt=""):
         if prompt in cachedVars:
             return cachedVars[prompt]
         else:
-            ret_val = func(prompt)
+            ret_val = None
+            if self == None:
+                ret_val = func(prompt)
+            else:
+                ret_val = func(self,prompt)
             cachePrompt(prompt,ret_val)
             return ret_val
 

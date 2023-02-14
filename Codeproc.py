@@ -115,6 +115,7 @@ class CodeGenerator():
 
         self.chatbot = ChatTuned(self.builder.get_initial_prompt(),API=self.API)
         self.filename = "resources/dummy.py"
+        self.jsonFileName = "resources/raw.json"
 
     def stop(self):
         self.chatbot.stop()
@@ -143,6 +144,11 @@ class CodeGenerator():
         print("updating file:",code)
         with open(self.filename,"w") as f:
             f.write(code)
+
+    def update_rawJson(self,rawJson):
+        print("updating JSON:",rawJson)
+        with open(self.jsonFileName,"w") as fJson:
+            json.dump(rawJson,fJson)
 
     def runTest(self,code,inputs,outputs):
         nameStart = code.find("def ") + len("def ")
@@ -174,13 +180,18 @@ class CodeGenerator():
             code = responseJSON["CODE"]
             self.update_file(code)
 
-        output     = self.run_file()
-        passed     = self.runTest(code,responseJSON["Inputs"],responseJSON["Outputs"])
+        if "Inputs" in responseJSON and "Outputs" in responseJSON:
+            self.update_rawJson({"Inputs" : responseJSON["Inputs"], "Outputs": responseJSON["Outputs"]})
+
+        try:
+            output     = self.run_file()
+            passed     = self.runTest(code,responseJSON["Inputs"],responseJSON["Outputs"])
 
         # clear cache if prompt return text is invalid
-        if not passed:
+            if not passed:
+                promptCacheClearEntry(prompt)
+        except:
             promptCacheClearEntry(prompt)
-
         return output,passed
 
     def run_file(self):

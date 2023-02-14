@@ -1,6 +1,4 @@
-def hello_world():
-    return 'Hello world63'
+def greet(name):
+    return 'Hello world ' + name
 
-Inputs: []
-
-Outputs: ['Hello world63']
+   

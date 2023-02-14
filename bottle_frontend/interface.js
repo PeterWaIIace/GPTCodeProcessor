@@ -1,4 +1,4 @@
-const {useState} = React;
+const {useState,useEffect} = React;
 
 let language_placeholder = "Python"
 
@@ -11,14 +11,28 @@ let prompt_parameters = {
 
 function CodeView()
 {
-    const [displayedText, setDisplayedText] = useState("");
+    const [displayedText,  setDisplayedText] = useState("");
+    const [displayedInput,  setDisplayedInput] = useState("");
+    const [displayedOutput, setDisplayedOutput] = useState("");
 
-    setInterval(function() {
-        fetch(`${window.location.origin}/read/dummy.py`, {cache: "no-store"})
-        .then(response => response.text())
-        .then(text     => setDisplayedText(text))
-        .catch(error   => console.error('Error:', error));
-    }, 1500);
+    useEffect(() => {
+        setInterval(function() {
+            fetch(`${window.location.origin}/read/dummy.py`, {cache: "no-store"})
+            .then(response => response.text())
+            .then(text     => setDisplayedText(text))
+            .catch(error   => console.error('Error:', error));
+
+            fetch(`${window.location.origin}/readJson/raw.json`, { cache: "no-store", method: 'GET', headers: {'Content-Type': 'application/json', 'Accept': 'application/json',},})
+            .then(response => response.json())
+            .then(text     => {
+                setDisplayedInput(text["Inputs"]);
+                setDisplayedOutput(text["Outputs"]);
+            })
+        }, 1500);
+    }, [])
+    // setInterval(function() {
+
+    // }, 1500);
 
     return (
         <div>
@@ -31,13 +45,13 @@ function CodeView()
                 <div className="col">
                     <h3>Inputs:</h3>
                     <div className="form-outline">
-                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedText} readonly></textarea>
+                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedInput} readonly></textarea>
                     </div>
                 </div>
                 <div className="col">
                     <h3>Outputs:</h3>
                     <div className="form-outline">
-                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedText} readonly></textarea>
+                        <textarea className="form-control" id="inputReqs" rows="2" style={{ background: 'rgba(10,0,0,.5)'}} value={displayedOutput} readonly></textarea>
                     </div>
                 </div>
             </div>
@@ -128,16 +142,16 @@ function PromptInput()
 
             <div className="row">
                 <h3>Input description</h3>
-                <div class="form-outline">
-                    <textarea class="form-control" id="inputReqs" rows="5"  value={inputReqs} onChange={handleInputReqsChange}></textarea>
+                <div className="form-outline">
+                    <textarea className="form-control" id="inputReqs" rows="5"  value={inputReqs} onChange={handleInputReqsChange}></textarea>
                 </div>
                 <h3>Function description</h3>
-                <div class="form-outline">
-                    <textarea class="form-control" id="inputReqs" rows="5"  value={inputfunctionDescription} onChange={handlefunctionDescriptionChange}></textarea>
+                <div className="form-outline">
+                    <textarea className="form-control" id="inputReqs" rows="5"  value={inputfunctionDescription} onChange={handlefunctionDescriptionChange}></textarea>
                 </div>
                 <h3>Output description</h3>
-                <div class="form-outline">
-                    <textarea class="form-control" id="outputReqs" rows="5"  value={outputReqs} onChange={handleOutputReqsChange}></textarea>
+                <div className="form-outline">
+                    <textarea className="form-control" id="outputReqs" rows="5"  value={outputReqs} onChange={handleOutputReqsChange}></textarea>
                 </div>
             </div>
 
